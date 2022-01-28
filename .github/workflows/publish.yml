@@ -1,0 +1,22 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  buildNPublish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - run: yarn
+      - run: yarn test
+      - run: yarn build
+      - name: Publish package
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
+          yarn publish --access public

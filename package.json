@@ -1,0 +1,34 @@
+{
+  "name": "@nexys/template",
+  "version": "0.0.0",
+  "private": false,
+  "license": "MIT",
+  "scripts": {
+    "start": "node ./dist/index.js",
+    "test": "rm -rf dist;jest",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nexys-system/typescript-package"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/*",
+    "README.md"
+  ],
+  "keywords": [
+    "typescript",
+    "SDK"
+  ],
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@types/jest": "^25.2.3",
+    "@types/nock": "^11.1.0",
+    "jest": "^26.0.1",
+    "ts-jest": "^25.3.1",
+    "typescript": "^3.9.3"
+  }
+}
