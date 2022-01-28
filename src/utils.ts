@@ -13,14 +13,16 @@ export const toHost = (h: T.HostOut) => ({
   IsDDNSEnabled: h["@_IsDDNSEnabled"],
 });
 
-export const toSetHostUnit = (r: T.Host[]): T.SetHostUnit[] =>
-  r.map((x) => ({
-    HostName: x.Name,
-    RecordType: x.Type,
-    MXPref: x.MXPref,
-    TTL: x.TTL,
-    Address: x.Address,
-  }));
+export const toSetHostUnit = (x: T.Host): T.SetHostUnit => ({
+  HostName: x.Name,
+  RecordType: x.Type,
+  MXPref: x.MXPref,
+  TTL: x.TTL,
+  Address: x.Address,
+});
+
+export const toSetHostUnits = (r: T.Host[]): T.SetHostUnit[] =>
+  r.map(toSetHostUnit);
 
 export const getCommand = (c: T.Command) => "namecheap.domains.dns." + c;
 

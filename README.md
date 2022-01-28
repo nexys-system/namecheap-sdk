@@ -20,7 +20,8 @@ const c = new NamecheapClient({ username, apiKey, clientIp });
 // available methods
 c.getHosts()
 c.setHosts()
-c.updateHosts()
+c.addHosts()
+c.deleteHosts()
 ```
 
 ## Namecheap official documentation

@@ -74,10 +74,15 @@ class NamecheapClient {
     return request(url);
   };
 
-  updateHosts = async (
+  /**
+   * add hosts to the existing hosts
+   * @param domain
+   * @param hosts
+   * @returns
+   */
+  addHosts = async (
     domain: T.Domain,
-    hosts: T.SetHostUnit[],
-    EmailType: T.EmailType
+    hosts: T.SetHostUnit[]
   ): Promise<{ body: string; status: number }> => {
     if (hosts.length === 0) {
       throw Error("hosts must not be empty");
@@ -85,11 +90,50 @@ class NamecheapClient {
 
     // fetch existing hosts
     const existingHosts = await this.getHosts(domain);
-    const existingHostsFormatted = U.toSetHostUnit(existingHosts);
+    const existingHostsFormatted = U.toSetHostUnits(existingHosts);
     // merge existing hosts and new hosts
     const allHosts = [...existingHostsFormatted, ...hosts];
 
     return this.setHosts(domain, allHosts);
+  };
+
+  deleteHosts = async (domain: T.Domain, hostIds: string[]) => {
+    if (hostIds.length === 0) {
+      throw Error("hosts must not be empty");
+    }
+
+    // fetch existing hosts
+    const existingHosts = await this.getHosts(domain);
+
+    const hostsToBeReAdded = existingHosts.filter(
+      (x) => !hostIds.includes(x.HostId)
+    );
+
+    return this.setHosts(domain, U.toSetHostUnits(hostsToBeReAdded));
+  };
+
+  updateHosts = async (
+    domain: T.Domain,
+    hostsToBeUpdated: { [id: string]: T.SetHostUnit }
+  ) => {
+    const hostIds = Object.keys(hostsToBeUpdated);
+
+    if (hostIds.length === 0) {
+      throw Error("hosts must not be empty");
+    }
+
+    // fetch existing hosts
+    const existingHosts = await this.getHosts(domain);
+
+    const hostsWithUpdate = existingHosts.map((host) => {
+      if (hostIds.includes(host.HostId)) {
+        return hostsToBeUpdated[host.HostId];
+      }
+
+      return U.toSetHostUnit(host);
+    });
+
+    return this.setHosts(domain, hostsWithUpdate);
   };
 }
 
