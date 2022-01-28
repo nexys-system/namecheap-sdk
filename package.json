@@ -1,8 +1,9 @@
 {
-  "name": "@nexys/template",
+  "name": "@nexys/namecheap",
   "version": "0.0.0",
   "private": false,
   "license": "MIT",
+  "module": "true",
   "scripts": {
     "start": "node ./dist/index.js",
     "test": "rm -rf dist;jest",
@@ -10,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nexys-system/typescript-package"
+    "url": "https://github.com/nexys-system/namecheap"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -23,12 +24,16 @@
     "SDK"
   ],
   "dependencies": {
+    "fast-xml-parser": "^4.0.1",
+    "node-fetch": "2.6.1"
   },
   "devDependencies": {
-    "@types/jest": "^25.2.3",
+    "@types/jest": "25.2.3",
     "@types/nock": "^11.1.0",
+    "@types/node-fetch": "^2.5.10",
     "jest": "^26.0.1",
     "ts-jest": "^25.3.1",
     "typescript": "^3.9.3"
-  }
+  },
+  "peerDependencies": {}
 }

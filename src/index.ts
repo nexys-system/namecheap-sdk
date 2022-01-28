@@ -1,1 +1,96 @@
-export default "hello world";
+import * as T from "./type";
+import * as U from "./utils";
+import { parseHosts } from "./parse";
+import request from "./request";
+
+class NamecheapClient {
+  paramsWoCommand: Omit<T.ParamsCore, "Command">;
+  host: string;
+  path: string;
+
+  constructor({
+    username,
+    apiKey,
+    clientIp,
+    host = "https://api.namecheap.com",
+    path = "/xml.response",
+  }: {
+    username: string;
+    apiKey: string;
+    clientIp: string;
+    host?: string;
+    path?: string;
+  }) {
+    this.paramsWoCommand = {
+      ApiUser: username,
+      ApiKey: apiKey,
+      UserName: username,
+      ClientIp: clientIp,
+    };
+
+    this.host = host;
+    this.path = path;
+  }
+
+  getUrl = (extraParams: { [p: string]: string }): string =>
+    U.getUrl(this.host, this.path, { ...this.paramsWoCommand, ...extraParams });
+
+  /**
+   * get list of hosts for a domain
+   * @param sld
+   * @param tld
+   * @returns
+   */
+  getHosts = async ({ SLD, TLD }: T.Domain): Promise<T.Host[]> => {
+    const url = this.getUrl({ SLD, TLD, Command: U.getCommand("getHosts") });
+    const { body } = await request(url);
+
+    return parseHosts(body);
+  };
+
+  setHosts = async (
+    { SLD, TLD }: T.Domain,
+    hosts: T.SetHostUnit[],
+    EmailType: T.EmailType = "MX" // by default custom MX
+  ): Promise<{ body: string; status: number }> => {
+    const params: { [k: string]: string } = {
+      SLD,
+      TLD,
+      EmailType,
+      Command: U.getCommand("setHosts"),
+    };
+
+    // add suffix to keys and add to the list of params
+    hosts.forEach((host, i) =>
+      Object.entries(host).map(([k, v]) => {
+        params[[k, i + 1].join("")] = String(v);
+      })
+    );
+
+    // here turn GET into POST?
+    // examples are not given
+    const url = this.getUrl(params);
+
+    return request(url);
+  };
+
+  updateHosts = async (
+    domain: T.Domain,
+    hosts: T.SetHostUnit[],
+    EmailType: T.EmailType
+  ): Promise<{ body: string; status: number }> => {
+    if (hosts.length === 0) {
+      throw Error("hosts must not be empty");
+    }
+
+    // fetch existing hosts
+    const existingHosts = await this.getHosts(domain);
+    const existingHostsFormatted = U.toSetHostUnit(existingHosts);
+    // merge existing hosts and new hosts
+    const allHosts = [...existingHostsFormatted, ...hosts];
+
+    return this.setHosts(domain, allHosts);
+  };
+}
+
+export default NamecheapClient;

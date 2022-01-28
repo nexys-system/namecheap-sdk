@@ -63,3 +63,4 @@ assets/*.json
 assets/revolut/certs/*
 
 build/*
+src/local.test.ts
