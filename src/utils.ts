@@ -36,3 +36,14 @@ export const getUrl = (
   path: string,
   params: { [p: string]: string }
 ): string => host + path + "?" + getParamsString(params);
+
+export const request = async (
+  url: string,
+  method: "GET" | "POST" = "GET"
+): Promise<{ body: string; status: number }> => {
+  const response = await fetch(url, { method });
+  const { status } = response;
+  const body: string = await response.text();
+
+  return { body, status };
+};

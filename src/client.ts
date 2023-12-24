@@ -1,7 +1,6 @@
 import * as T from "./type";
 import * as U from "./utils";
 import { parseHosts } from "./parse";
-import request from "./request";
 
 class NamecheapClient {
   paramsWoCommand: Omit<T.ParamsCore, "Command">;
@@ -43,7 +42,7 @@ class NamecheapClient {
    */
   getHosts = async ({ SLD, TLD }: T.Domain): Promise<T.Host[]> => {
     const url = this.getUrl({ SLD, TLD, Command: U.getCommand("getHosts") });
-    const { body } = await request(url);
+    const { body } = await U.request(url);
 
     return parseHosts(body);
   };
@@ -71,7 +70,7 @@ class NamecheapClient {
     // examples are not given
     const url = this.getUrl(params);
 
-    return request(url);
+    return U.request(url);
   };
 
   /**
